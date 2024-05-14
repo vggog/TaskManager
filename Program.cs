@@ -1,5 +1,6 @@
 using TaskManager.Repositories;
 using TaskManager.DataBase;
+using Microsoft.OpenApi.Models;
 
 namespace TaskManager
 {
@@ -13,7 +14,17 @@ namespace TaskManager
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "TaskManager API",
+                    Description = "Пример ASP .NET Core Web API"
+                }
+                );
+            }
+            );
 
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<DataBaseContext, DataBaseContext>();

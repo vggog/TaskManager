@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 using System.Net;
 using TaskManager.Models;
 using TaskManager.Repositories;
@@ -18,17 +19,16 @@ namespace TaskManager.Controllers
             _repository = repository;
         }
 
-        /// <summary>
-        /// Получить все задачи.
-        /// </summary>
         [HttpGet]
-        [ProducesResponseType(typeof(TaskModel), (int)HttpStatusCode.OK)]
-        public IEnumerable<TaskModel> Get()
+        [ProducesResponseType(typeof(IEnumerable<TaskModel>), (int)HttpStatusCode.OK)]
+        public IActionResult Get()
         {
-            return _repository.GetAll();
+            return Ok(_repository.GetAll());
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(TaskModel), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
         public IActionResult Get(int id)
         {
             TaskModel? task = _repository.GetById(id);
@@ -39,15 +39,16 @@ namespace TaskManager.Controllers
         }
 
         [HttpPost]
-        public TaskModel Post([FromBody] TaskCreateSchema taskCreate)
+        [ProducesResponseType(typeof(TaskModel), (int)HttpStatusCode.OK)]
+        public IActionResult Post([FromBody] TaskCreateSchema taskCreate)
         {
             TaskModel createdTask = new() 
             { 
                 Title = taskCreate.title, 
                 Description = taskCreate.description, 
-                Status = "Открыта" 
+                Status = TaskStatusUtil.GetFirstStatusOfTask()
             };
-            return _repository.Create(createdTask);
+            return Ok(_repository.Create(createdTask));
         }
 
         [HttpPatch("{id}")]
