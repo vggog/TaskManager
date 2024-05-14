@@ -1,5 +1,6 @@
 ﻿using TaskManager.DataBase;
 using TaskManager.Models;
+using TaskManager.Schemas;
 
 namespace TaskManager.Repositories
 {
@@ -34,6 +35,23 @@ namespace TaskManager.Repositories
             context.Tasks.Add(entity);
             context.SaveChanges();
             return entity;
+        }
+
+        public TaskModel? UpdateTask(int id, TaskUpdateSchema updatedTask)
+        {
+            DataBaseContext context = new();
+
+            TaskModel? task = GetById(id);
+
+            if (task == null) return null;
+
+            if (updatedTask.title != null) task.Title = updatedTask.title;
+            if (updatedTask.description != null) task.Description = updatedTask.description;
+            if (updatedTask != null) task.Status = updatedTask.status;
+
+            context.Tasks.Update(task);
+            context.SaveChanges();
+            return task;
         }
     }
 }
