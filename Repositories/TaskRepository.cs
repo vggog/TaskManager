@@ -53,5 +53,17 @@ namespace TaskManager.Repositories
             context.SaveChanges();
             return task;
         }
+
+        public override void Delete(int id)
+        {
+            DataBaseContext context = new();
+
+            TaskModel? task = GetById(id);
+
+            if (task == null) return;
+
+            context.Tasks.Remove(task);
+            context.SaveChanges();
+        }
     }
 }

@@ -66,5 +66,14 @@ namespace TaskManager.Controllers
 
             return Ok(task);
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        public void Delete(int id)
+        {
+            TaskRepository taskRepository = new();
+
+            taskRepository.Delete(id);
+        }
     }
 }
