@@ -4,23 +4,25 @@ using TaskManager.Schemas;
 
 namespace TaskManager.Repositories
 {
-    public class TaskRepository : BaseRepository<TaskModel>
+    public class TaskRepository : ITaskRepository
     {
+        DataBaseContext _context;
 
-        public override IEnumerable<TaskModel> GetAll()
+        public TaskRepository(DataBaseContext context) 
         {
-            DataBaseContext context = new();
-            
-            return context.Tasks;
+            _context = context;
         }
 
-        public override TaskModel? GetById(int id)
-        {
-            DataBaseContext context = new();
+        public IEnumerable<TaskModel> GetAll()
+        {          
+            return _context.Tasks;
+        }
 
+        public TaskModel? GetById(int id)
+        {
             try
             {
-                return context.Tasks.Where(task => task.Id.Equals(id)).First();
+                return _context.Tasks.Where(task => task.Id.Equals(id)).First();
             }
             catch (InvalidOperationException)
             {
@@ -28,19 +30,15 @@ namespace TaskManager.Repositories
             }
         }
 
-        public override TaskModel Create(TaskModel entity)
+        public TaskModel Create(TaskModel entity)
         {
-            DataBaseContext context = new();
-
-            context.Tasks.Add(entity);
-            context.SaveChanges();
+            _context.Tasks.Add(entity);
+            _context.SaveChanges();
             return entity;
         }
 
         public TaskModel? UpdateTask(int id, TaskUpdateSchema updatedTask)
         {
-            DataBaseContext context = new();
-
             TaskModel? task = GetById(id);
 
             if (task == null) return null;
@@ -49,21 +47,19 @@ namespace TaskManager.Repositories
             if (updatedTask.description != null) task.Description = updatedTask.description;
             if (updatedTask != null) task.Status = updatedTask.status;
 
-            context.Tasks.Update(task);
-            context.SaveChanges();
+            _context.Tasks.Update(task);
+            _context.SaveChanges();
             return task;
         }
 
-        public override void Delete(int id)
+        public void Delete(int id)
         {
-            DataBaseContext context = new();
-
             TaskModel? task = GetById(id);
 
             if (task == null) return;
 
-            context.Tasks.Remove(task);
-            context.SaveChanges();
+            _context.Tasks.Remove(task);
+            _context.SaveChanges();
         }
     }
 }

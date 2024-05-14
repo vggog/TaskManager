@@ -11,6 +11,13 @@ namespace TaskManager.Controllers
     [ApiController]
     public class TasksController : ControllerBase
     {
+        ITaskRepository _repository;
+
+        public TasksController(ITaskRepository repository) 
+        {
+            _repository = repository;
+        }
+
         /// <summary>
         /// Получить все задачи.
         /// </summary>
@@ -18,16 +25,13 @@ namespace TaskManager.Controllers
         [ProducesResponseType(typeof(TaskModel), (int)HttpStatusCode.OK)]
         public IEnumerable<TaskModel> Get()
         {
-            TaskRepository taskRepository = new();
-            return taskRepository.GetAll();
+            return _repository.GetAll();
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            TaskRepository taskRepository = new();
-
-            TaskModel? task = taskRepository.GetById(id);
+            TaskModel? task = _repository.GetById(id);
 
             if (task == null) return NotFound();
 
@@ -37,15 +41,13 @@ namespace TaskManager.Controllers
         [HttpPost]
         public TaskModel Post([FromBody] TaskCreateSchema taskCreate)
         {
-            TaskRepository taskRepository = new();
-
             TaskModel createdTask = new() 
             { 
                 Title = taskCreate.title, 
                 Description = taskCreate.description, 
                 Status = "Открыта" 
             };
-            return taskRepository.Create(createdTask);
+            return _repository.Create(createdTask);
         }
 
         [HttpPatch("{id}")]
@@ -59,8 +61,7 @@ namespace TaskManager.Controllers
                 return BadRequest($"Status field must be: {TaskStatusUtil.GetStatuses(", ")}");
             }
 
-            TaskRepository taskRepository = new();
-            TaskModel? task = taskRepository.UpdateTask(id, updatedTask);
+            TaskModel? task = _repository.UpdateTask(id, updatedTask);
 
             if (task == null) return NotFound();
 
@@ -71,9 +72,7 @@ namespace TaskManager.Controllers
         [ProducesResponseType((int)HttpStatusCode.OK)]
         public void Delete(int id)
         {
-            TaskRepository taskRepository = new();
-
-            taskRepository.Delete(id);
+            _repository.Delete(id);
         }
     }
 }
