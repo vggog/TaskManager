@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Text.Json;
-using TaskManager.DataBase;
 using TaskManager.Models;
 using TaskManager.Repositories;
 using TaskManager.Schemas;
@@ -21,6 +19,18 @@ namespace TaskManager.Controllers
         {
             TaskRepository taskRepository = new();
             return taskRepository.GetAll();
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            TaskRepository taskRepository = new();
+
+            TaskModel? task = taskRepository.GetById(id);
+
+            if (task == null) return NotFound();
+
+            return Ok(task);
         }
 
         [HttpPost]

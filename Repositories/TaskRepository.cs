@@ -13,6 +13,20 @@ namespace TaskManager.Repositories
             return context.Tasks;
         }
 
+        public override TaskModel? GetById(int id)
+        {
+            DataBaseContext context = new();
+
+            try
+            {
+                return context.Tasks.Where(task => task.Id.Equals(id)).First();
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
+
         public override TaskModel Create(TaskModel entity)
         {
             DataBaseContext context = new();
