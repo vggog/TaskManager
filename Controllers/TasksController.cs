@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Text.Json;
+using TaskManager.DataBase;
 using TaskManager.Models;
 using TaskManager.Repositories;
+using TaskManager.Schemas;
 
 namespace TaskManager.Controllers
 {
@@ -18,6 +21,20 @@ namespace TaskManager.Controllers
         {
             TaskRepository taskRepository = new();
             return taskRepository.GetAll();
+        }
+
+        [HttpPost]
+        public TaskModel Post([FromBody] TaskCreateSchema taskCreate)
+        {
+            TaskRepository taskRepository = new();
+
+            TaskModel createdTask = new() 
+            { 
+                Title = taskCreate.title, 
+                Description = taskCreate.description, 
+                Status = "Открыта" 
+            };
+            return taskRepository.Create(createdTask);
         }
     }
 }

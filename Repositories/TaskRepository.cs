@@ -12,5 +12,14 @@ namespace TaskManager.Repositories
             
             return context.Tasks;
         }
+
+        public override TaskModel Create(TaskModel entity)
+        {
+            DataBaseContext context = new();
+
+            context.Tasks.Add(entity);
+            context.SaveChanges();
+            return entity;
+        }
     }
 }
