@@ -29,6 +29,9 @@ namespace TaskManager
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<DataBaseContext, DataBaseContext>();
 
+            builder.Services.Configure<SQLiteDBSettings>(
+                builder.Configuration.GetSection(SQLiteDBSettings.DBSettings));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
