@@ -366,4 +366,5 @@ FodyWeavers.xsd
 tasks.db
 
 # AppSettings
-appsettings.json
+/appsettings.json
+/appsettings.Development.json
