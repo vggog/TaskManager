@@ -46,7 +46,7 @@ namespace TaskManager.Repositories
 
             if (updatedTask.title != null) task.Title = updatedTask.title;
             if (updatedTask.description != null) task.Description = updatedTask.description;
-            if (updatedTask != null) task.Status = updatedTask.status;
+            if (updatedTask.status != null) task.Status = updatedTask.status;
 
             await _context.SaveChangesAsync();
             return task;
