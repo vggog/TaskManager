@@ -1,4 +1,5 @@
-﻿using TaskManager.DataBase;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManager.DataBase;
 using TaskManager.Models;
 using TaskManager.Schemas;
 
@@ -13,16 +14,16 @@ namespace TaskManager.Repositories
             _context = context;
         }
 
-        public IEnumerable<TaskModel> GetAll()
+        async public Task<IEnumerable<TaskModel>> GetAll()
         {          
-            return _context.Tasks;
+            return await _context.Tasks.ToListAsync();
         }
 
-        public TaskModel? GetById(int id)
+        async public Task<TaskModel?> GetById(int id)
         {
             try
             {
-                return _context.Tasks.Where(task => task.Id.Equals(id)).First();
+                return await _context.Tasks.Where(task => task.Id.Equals(id)).FirstAsync();
             }
             catch (InvalidOperationException)
             {
@@ -30,16 +31,16 @@ namespace TaskManager.Repositories
             }
         }
 
-        public TaskModel Create(TaskModel entity)
+        async public Task<TaskModel> Create(TaskModel entity)
         {
-            _context.Tasks.Add(entity);
-            _context.SaveChanges();
+            await _context.Tasks.AddAsync(entity);
+            await _context.SaveChangesAsync();
             return entity;
         }
 
-        public TaskModel? UpdateTask(int id, TaskUpdateSchema updatedTask)
+        async public Task<TaskModel?> UpdateTask(int id, TaskUpdateSchema updatedTask)
         {
-            TaskModel? task = GetById(id);
+            TaskModel? task = await GetById(id);
 
             if (task == null) return null;
 
@@ -47,19 +48,18 @@ namespace TaskManager.Repositories
             if (updatedTask.description != null) task.Description = updatedTask.description;
             if (updatedTask != null) task.Status = updatedTask.status;
 
-            _context.Tasks.Update(task);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return task;
         }
 
-        public void Delete(int id)
+        async public void Delete(int id)
         {
-            TaskModel? task = GetById(id);
+            TaskModel? task = await GetById(id);
 
             if (task == null) return;
 
             _context.Tasks.Remove(task);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }

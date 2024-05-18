@@ -21,17 +21,17 @@ namespace TaskManager.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TaskModel>), (int)HttpStatusCode.OK)]
-        public IActionResult Get()
+        async public Task<IActionResult> Get()
         {
-            return Ok(_repository.GetAll());
+            return Ok(await _repository.GetAll());
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(TaskModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        public IActionResult Get(int id)
+        async public Task<IActionResult> Get(int id)
         {
-            TaskModel? task = _repository.GetById(id);
+            TaskModel? task = await _repository.GetById(id);
 
             if (task == null) return NotFound();
 
@@ -40,7 +40,7 @@ namespace TaskManager.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(TaskModel), (int)HttpStatusCode.OK)]
-        public IActionResult Post([FromBody] TaskCreateSchema taskCreate)
+        async public Task<IActionResult> Post([FromBody] TaskCreateSchema taskCreate)
         {
             TaskModel createdTask = new() 
             { 
@@ -48,21 +48,21 @@ namespace TaskManager.Controllers
                 Description = taskCreate.description, 
                 Status = TaskStatusUtil.GetFirstStatusOfTask()
             };
-            return Ok(_repository.Create(createdTask));
+            return Ok(await _repository.Create(createdTask));
         }
 
         [HttpPatch("{id}")]
         [ProducesResponseType(typeof(TaskModel), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put(int id, [FromBody] TaskUpdateSchema updatedTask)
+        async public Task<IActionResult> Put(int id, [FromBody] TaskUpdateSchema updatedTask)
         {
             if (updatedTask.status != null && !TaskStatusUtil.IsValidTaskStatus(updatedTask.status))
             {
                 return BadRequest($"Status field must be: {TaskStatusUtil.GetStatuses(", ")}");
             }
 
-            TaskModel? task = _repository.UpdateTask(id, updatedTask);
+            TaskModel? task = await _repository.UpdateTask(id, updatedTask);
 
             if (task == null) return NotFound();
 
@@ -71,7 +71,7 @@ namespace TaskManager.Controllers
 
         [HttpDelete("{id}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
-        public void Delete(int id)
+        async public void Delete(int id)
         {
             _repository.Delete(id);
         }
